@@ -6,7 +6,7 @@
 /*   By: ecross <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/28 16:33:19 by ecross            #+#    #+#             */
-/*   Updated: 2020/02/28 17:04:21 by ecross           ###   ########.fr       */
+/*   Updated: 2020/03/02 11:11:02 by ecross           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,52 +69,53 @@ int		get_install_data(char *buff, char *output_file)
 	}
 	command = ft_strjoin("chmod 777 ", output_file);
 	system(command);
+	free(command);
 
 	data[0] = 0;
-	ft_putstr_fd("Job:                   T", fd);
+	ft_putstr_fd("Job:                    T", fd);
 	get_value(buff, data, "TL", 1, 0, fd);
 	ft_putstr_fd(data, fd);
 	
-	ft_putstr_fd("1   Customer name:     ", fd);
+	ft_putstr_fd("#1   Customer name:     ", fd);
 	get_value(buff, data, "TL", 1, 1, fd);
 	ft_putstr_fd(data, fd);
 
-	ft_putstr_fd("2   Inverter location: ", fd);
+	ft_putstr_fd("#2   Inverter location: ", fd);
 	get_value(buff, data, "Location of Inverter", 2, 1, fd);
 	ft_putstr_fd(data, fd);
 	
 	if(!get_value(buff, data, "Location of TGM", 2, 1, fd))
 	{
-		ft_putstr_fd("3   CU location:       ", fd);
+		ft_putstr_fd("#3   CU location:       ", fd);
 		get_value(buff, data, "Location of CU", 1, 1, fd);
 	}
 	else
 	{
-		ft_putstr_fd("3   TGM location:      ", fd);
+		ft_putstr_fd("#3   TGM location:      ", fd);
 	}
 	ft_putstr_fd(data, fd);
 
-	ft_putstr_fd("4   Monitoring value:  ", fd);
+	ft_putstr_fd("#4   Monitoring value:  ", fd);
 	get_value(buff, data, "Monitoring", 1, 1, fd);
 	ft_putstr_fd(data, fd);
 	
-	ft_putstr_fd("5   DNO pre_app:       ", fd);
+	ft_putstr_fd("#5   DNO pre_app:       ", fd);
 	get_value(buff, data, "DNO", 1, 1, fd);
 	ft_putstr_fd(data, fd);
 	
-	ft_putstr_fd("6   MPAN:              ", fd);
+	ft_putstr_fd("#6   MPAN:              ", fd);
 	get_value(buff, data, "MPAN", 1, 1, fd);
 	ft_putstr_fd(data, fd);
 	
-	ft_putstr_fd("7   Panels:            ", fd);
+	ft_putstr_fd("#7   Panels:            ", fd);
 	get_value(buff, data, "PV Panel Desc", 2, 1, fd);
 	ft_putstr_fd(data, fd);
 
-	ft_putstr_fd("8   Inverter:          ", fd);
+	ft_putstr_fd("#8   Inverter:          ", fd);
 	get_value(buff, data, "Inverter", 12, 1, fd);
 	ft_putstr_fd(data, fd);
 	
-	ft_putstr_fd("9   EIC or DC/AC:      ", fd);
+	ft_putstr_fd("#9   EIC or DC/AC:      ", fd);
 	get_value(buff, data, "Full EIC or", 1, 1, fd);
 	ft_putstr_fd(data, fd);
 
@@ -132,10 +133,10 @@ int		get_project_data(char *buff, char *output_file)
 		ft_putstr_fd("Error opening data file.\n", 1);
 		return (0);
 	}
-	ft_putstr_fd("10  Phases:            ", fd);
+	ft_putstr_fd("#10  Phases:            ", fd);
 	get_value(buff, data, "Phases", 1, 1, fd);
 	ft_putstr_fd(data, fd);
-	ft_putstr_fd("11  Dom or Com:        ", fd);
+	ft_putstr_fd("#11  Dom or Com:        ", fd);
 	get_value(buff, data, "Property Type", 1, 1, fd);
 	ft_putstr_fd(data, fd);
 	close(fd);
@@ -153,12 +154,11 @@ int		read_sheet(char *buff, char *file)
 		return (0);
 	}
 	bytes = read(fd, buff, BUFF_SIZE);
+	close(fd);
 	if (bytes < 0)
 	{
 		ft_putstr_fd("Error reading file.\n", 1);
-		close(fd);
 		return (0);
 	}
-	close(fd);
 	return (1);
 }
