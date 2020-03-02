@@ -6,7 +6,7 @@
 /*   By: ecross <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/28 16:34:10 by ecross            #+#    #+#             */
-/*   Updated: 2020/03/02 13:01:03 by ecross           ###   ########.fr       */
+/*   Updated: 2020/03/02 14:36:25 by ecross           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,29 @@
 */
 
 # define COVER_SHEET "../templates/01_cover.txt"
+# define LAST_PAGE "../templates/08_general.txt"
+
+# define CUSTOMER "../templates/02_customer.txt"
+# define NO_CUSTOMER "../templates/02_no_customer.txt"
+
+# define VIS_ONE_PHASE_ONE_LOC "../templates/03_1_1.txt"
+# define VIS_ONE_PHASE_TWO_LOC "../templates/03_1_2.txt"
+# define VIS_THREE_PHASE_ONE_LOC "../templates/03_3_1.txt"
+# define VIS_THREE_PHASE_TWO_LOC "../templates/03_3_2.txt"
+
+# define PV_OP_ONE_LOC "../templates/04_1.txt"
+# define PV_OP_TWO_LOC "../templates/04_2.txt"
+
+# define COMMERCIAL "../templates/04b_commercial.txt"
+
+# define SIX_G99_10_12_19_28 "../templates/06_99_10_12_19_28.txt"
+# define SIX_G99_20 "../templates/06_99_27.txt"
+# define SIX_G99_25 "../templates/06_99_27.txt"
+# define SIX_G99_27 "../templates/06_99_27.txt"
+# define SIX_G98_10_12_19_28 "../templates/06_98_10_12_19_28.txt"
+# define SIX_G98_25 "../templates/06_98_25.txt"
+# define SIX_G98_20 "../templates/06_98_20.txt"
+
 # define HOP_FOLDER "../current"
 
 typedef struct	s_data_struct
