@@ -6,7 +6,7 @@
 /*   By: ecross <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/28 17:25:18 by ecross            #+#    #+#             */
-/*   Updated: 2020/03/02 12:38:50 by ecross           ###   ########.fr       */
+/*   Updated: 2020/03/02 12:43:40 by ecross           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,12 +156,11 @@ int		get_struct_data(t_data_struct *s, char *buff)
 	return (1);
 }
 
-int		process(char *data_file)
+int		process(t_data_struct *s, char *data_file)
 {
 	int				fd;
 	int				bytes;
 	char			buff[SMALL_BUFF_SIZE];
-	t_data_struct	s;
 
 	if ((fd = open(data_file, O_RDONLY)) < 0)
 	{
@@ -175,14 +174,6 @@ int		process(char *data_file)
 		ft_putstr_fd("Error reading file.\n", 1);
 		return (0);
 	}
-	get_struct_data(&s, buff);
-	printf("job       TL%s\n", s.job);
-	printf("cust known %d\n", s.cust_known);
-	printf("locations %d\n", s.locations);
-	printf("mpan %d\n", s.mpan);
-	printf("phases %d\n", s.phases);
-	printf("dno %d\n", s.dno_app);
-	printf("monitoring %d\n", s.monitoring);
-	printf("commercial %d\n", s.commercial);
+	get_struct_data(s, buff);
 	return (1);
 }
