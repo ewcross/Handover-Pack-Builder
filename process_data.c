@@ -6,7 +6,7 @@
 /*   By: ecross <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/28 17:25:18 by ecross            #+#    #+#             */
-/*   Updated: 2020/03/03 14:21:29 by ecross           ###   ########.fr       */
+/*   Updated: 2020/03/03 17:33:33 by ecross           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,8 +144,7 @@ int		get_struct_data(t_data_struct *s, char *buff)
 
 	if(!get_job_no(s, buff))
 		ft_putstr_fd("Could not get job number.\n", 1);
-	/*can maybe change bool flips when opposite id is known*/
-	set_bool_if_match(&(s->cust_known), get_string(buff, "#1"), "no");
+	set_bool_if_match(&(s->cust_known), get_string(buff, "#1"), "PV System Owner");
 	s->cust_known = !s->cust_known;
 	loc1 = get_string(buff, "#2");
 	loc2 = get_string(buff, "#3");
