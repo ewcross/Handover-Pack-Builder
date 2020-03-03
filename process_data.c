@@ -6,7 +6,7 @@
 /*   By: ecross <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/28 17:25:18 by ecross            #+#    #+#             */
-/*   Updated: 2020/03/02 12:43:40 by ecross           ###   ########.fr       */
+/*   Updated: 2020/03/03 14:21:29 by ecross           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,8 @@ int		same_str(char *s1, char *s2)
 {
 	int		i;
 
+	if (!s1 || !s2)
+		return (0);
 	i = 0;
 	while (s1[i] && s2[i])
 	{
@@ -101,7 +103,9 @@ int		same_str(char *s1, char *s2)
 void	get_mpan(t_data_struct *s, char *mpan)
 {
 	char	digits[3];
-	
+
+	if (!mpan)
+		return ;
 	digits[0] = mpan[0];
 	digits[1] = mpan[1];
 	digits[2] = 0;
@@ -111,6 +115,8 @@ void	get_mpan(t_data_struct *s, char *mpan)
 
 void	get_phase(t_data_struct *s, char *phases)
 {
+	if (!phases)
+		return ;
 	if (same_str(phases, "Single phase"))
 		s->phases = 1;
 	else if (same_str(phases, "3 Phase"))
@@ -122,6 +128,8 @@ void	get_phase(t_data_struct *s, char *phases)
 
 void	set_bool_if_match(bool *on, char *str, char *match)
 {
+	if (!str)
+		return ;
 	if (same_str(str, match))
 		*on = 1;
 	else

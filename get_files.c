@@ -6,7 +6,7 @@
 /*   By: ecross <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/03/02 12:46:56 by ecross            #+#    #+#             */
-/*   Updated: 2020/03/02 14:32:19 by ecross           ###   ########.fr       */
+/*   Updated: 2020/03/03 13:29:40 by ecross           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,6 @@ int		copy_file(char *file)
 	char	*p1;
 	char	*p2;
 
-	/*will need to handle return values of system call*/
 	p1 = ft_strjoin("cp ", file);
 	p2 = ft_strjoin(p1, " ");
 	free(p1);
@@ -56,13 +55,32 @@ int		visio_and_pv_op(t_data_struct *s)
 
 int		six_doc(t_data_struct *s)
 {
+	int		mpan;
+
+	mpan = s->mpan;
 	if (s->dno_app)
 	{
-		copy_file(SIX_G99_20);
+		if (mpan == 10 || mpan == 12 || mpan == 19 || mpan == 28)
+			copy_file(G99_10_12_19_28);
+		else if (mpan == 20)
+			copy_file(G99_20);
+		else if (mpan == 25)
+			copy_file(G99_25);
+		else if (mpan == 27)
+			copy_file(G99_27);
+		else
+			ft_putstr_fd("Could not identify correct 06 template. Check MPAN value in data.txt\n", 1);
 	}
 	else if (!s->dno_app)
 	{
-		copy_file(SIX_G98_20);
+		if (mpan == 10 || mpan == 12 || mpan == 19 || mpan == 28)
+			copy_file(G98_10_12_19_28);
+		else if (mpan == 20)
+			copy_file(G98_20);
+		else if (mpan == 25)
+			copy_file(G98_25);
+		else
+			ft_putstr_fd("Could not identify correct 06 template. Check MPAN value in data.txt\n", 1);
 	}
 	return (1);
 }
@@ -78,9 +96,9 @@ int		get_files(t_data_struct *s)
 	else
 		copy_file(NO_CUSTOMER);
 	visio_and_pv_op(s);
-	six_doc(s);
 	if (s->commercial)
 		copy_file(COMMERCIAL);
+	six_doc(s);
 	copy_file(LAST_PAGE);
 	return (1);
 }

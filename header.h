@@ -6,7 +6,7 @@
 /*   By: ecross <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/28 16:34:10 by ecross            #+#    #+#             */
-/*   Updated: 2020/03/02 14:36:25 by ecross           ###   ########.fr       */
+/*   Updated: 2020/03/03 14:24:21 by ecross           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,33 +27,46 @@
 
 /*
 **Include here all relevant paths to template files
+**Spaces in file names MUST be escaped
 */
 
-# define COVER_SHEET "../templates/01_cover.txt"
-# define LAST_PAGE "../templates/08_general.txt"
+# define COVER_SHEET "../templates/01**Coversheet*"
+# define LAST_PAGE "../templates/08**Warranty*"
 
-# define CUSTOMER "../templates/02_customer.txt"
-# define NO_CUSTOMER "../templates/02_no_customer.txt"
+# define CUSTOMER "../templates/02**Coveringletter.*"
+# define NO_CUSTOMER "../templates/02**Coveringletter_No_Customer.*"
 
-# define VIS_ONE_PHASE_ONE_LOC "../templates/03_1_1.txt"
-# define VIS_ONE_PHASE_TWO_LOC "../templates/03_1_2.txt"
-# define VIS_THREE_PHASE_ONE_LOC "../templates/03_3_1.txt"
-# define VIS_THREE_PHASE_TWO_LOC "../templates/03_3_2.txt"
+# define VIS_ONE_PHASE_ONE_LOC "../templates/03**1**1*"
+# define VIS_ONE_PHASE_TWO_LOC "../templates/03**1**2*"
+# define VIS_THREE_PHASE_ONE_LOC "../templates/03**3**1*"
+# define VIS_THREE_PHASE_TWO_LOC "../templates/03**3**2*"
 
-# define PV_OP_ONE_LOC "../templates/04_1.txt"
-# define PV_OP_TWO_LOC "../templates/04_2.txt"
+# define PV_OP_ONE_LOC "../templates/04**Location.*"
+# define PV_OP_TWO_LOC "../templates/04**Locations*"
 
-# define COMMERCIAL "../templates/04b_commercial.txt"
+# define COMMERCIAL "../templates/04b*"
 
-# define SIX_G99_10_12_19_28 "../templates/06_99_10_12_19_28.txt"
-# define SIX_G99_20 "../templates/06_99_27.txt"
-# define SIX_G99_25 "../templates/06_99_27.txt"
-# define SIX_G99_27 "../templates/06_99_27.txt"
-# define SIX_G98_10_12_19_28 "../templates/06_98_10_12_19_28.txt"
-# define SIX_G98_25 "../templates/06_98_25.txt"
-# define SIX_G98_20 "../templates/06_98_20.txt"
+# define G99_10_12_19_28 "../templates/06**G99**10_12_19_28*"
+# define G99_20 "../templates/06**G99**20*"
+# define G99_25 "../templates/06**G99**25*"
+# define G99_27 "../templates/06**27**G99*"
+
+# define G98_10_12_19_28 "../templates/06**G98**10_12_19_28*"
+# define G98_25 "../templates/06**G98**25*"
+# define G98_20 "../templates/06**G98**20**"
 
 # define HOP_FOLDER "../current"
+
+/*Extra docs
+"../templates/03 Template 3 Phase 1 Location Integrated Meter PV Electrical Schematic.vsdx"
+"../templates/03 Template Micro-Inverter PV Electrical Schematic.vsdx"
+"../templates/06 Template ESPE G99 Form A3-1 issue 1 amd 3.docx"
+"../templates/06 Template SSEG G98 Form B Installation Document for connection.docx"
+"../templates/07 Template PV Array & AC Circuit Test Only.docx"
+"../templates/07 Template PV Array Test Only.docx"
+"../templates/07 Template_EIC(2019-3).docx"
+"../templates/07 Template_EIC(2020-1).docx"
+*/
 
 typedef struct	s_data_struct
 {

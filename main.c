@@ -6,7 +6,7 @@
 /*   By: ecross <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/02/27 16:41:12 by ecross            #+#    #+#             */
-/*   Updated: 2020/03/02 12:46:46 by ecross           ###   ########.fr       */
+/*   Updated: 2020/03/03 14:22:07 by ecross           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,14 @@ int	main(void)
 	char			buff[BUFF_SIZE];
 	t_data_struct	s;
 
-	/*read_sheet(buff, "../install.csv");
+	system("mv ../*Install.csv ../install.csv");
+	system("mv ../*Project.csv ../project.csv");
+	read_sheet(buff, "../install.csv");
 	if(!get_install_data(buff, "../data.txt"))
 		return (1);
 	read_sheet(buff, "../project.csv");
 	if(!get_project_data(buff, "../data.txt"))
-		return (1);*/
+		return (1);
 	process(&s, "../data.txt");
 	
 	printf("job       TL%s\n", s.job);
