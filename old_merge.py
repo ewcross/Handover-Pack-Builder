@@ -6,7 +6,7 @@
 #    By: ecross <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/03/17 16:55:24 by ecross            #+#    #+#              #
-#    Updated: 2020/03/18 18:07:11 by ecross           ###   ########.fr        #
+#    Updated: 2020/03/18 16:49:57 by ecross           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,64 +19,40 @@ class Merge:
     
     copy_list = []
     merge_list = []
-    
-    def __init__(self, ref):
-        self.ref = ref
-        #needs changing to current dir
-        dst_root = '../'
-        for dirs in os.listdir(dst_root):
-            if dirs.startswith(self.ref):
-                path = dst_root + dirs
-                self.find_workbook(path)
-                self.find_dst_path(path)
-        if self.dst == None or self.workbook == None:
-            exit()
-    
-    def find_dst_path(self, path):
-        for dirs in os.listdir(path):
-            if dirs.startswith('HOP'):
-                self.dst = os.path.join(path, dirs)
-                return
-        self.dst = None
-        print('Could not find output location. Please check job number\
-                is correct, and that it\'s folder exists in \'Sales\'')
-    
-    def find_workbook(self, path):
-        for dirs in os.listdir(path):
-            if dirs.startswith('Install'):
-                path = os.path.join(path, dirs)
-                for files in os.listdir(path):
-                    if files.endswith('xlsx'):
-                        with xlrd.open_workbook(os.path.join(path, files), on_demand = True) as workbook:
-                            self.workbook = workbook
-                        return
-        self.workbook = None
-        print('Could not find installation spreadsheet.')
 
-    def get_col(self, sheet, title):
-        i = 0
-        for x in sheet.row(0):
-            if x.value == title:
-                return (i)
-            i += 1
-        return 0
+    def __init__(self, workbook):
+        self.workbook = workbook
+        sheet = workbook.sheet_by_name('A Merge Data')
+        self.ref = sheet.cell(1, 1).value
+        dst_root = '../'
+        for d in os.listdir(dst_root):
+            if d.startswith(self.ref):
+                for f in os.listdir(dst_root + d):
+                    if f.startswith('HOP'):
+                        self.dst = dst_root + d + '/' + f
+                        return
+        self.dst = None
+        print('Could not find output location.')
 
     def fill_lists(self):
         sheet = self.workbook.sheet_by_name('HOP Merge')
-        infile_col = get_col(sheet, 'Input Doc')
-        outfile_col = get_col(sheet, 'Output Doc')
+        ind = 0
+        for x in sheet.row(0):
+            if x.value == 'Document':
+                break
+            ind += 1
         i = 0
-        for x in sheet.col(infile_col):
+        for x in sheet.col(ind):
             if x.value != xlrd.empty_cell.value:
                 #need to check on positions and directions of strokes
-                src_folder = str(sheet.cell(i, infile_col - 1).value)
+                src_folder = str(sheet.cell(i, ind - 1).value)
                 if src_folder[len(src_folder) - 1] != '/':
                     src_folder += '/'
                 if self.dst[len(self.dst) - 1] != '/':
                     self.dst += '/'
                 #might need to return to a pair with path of each, if complete destination
                 #file name is provided in spreadsheet
-                tup = (src_folder, str(sheet.cell(i, infile_col).value), self.dst, str(sheet.cell(i, outfile_col).value))
+                tup = (src_folder, str(sheet.cell(i, ind).value), self.dst, str(sheet.cell(i, ind).value))
                 if sheet.cell(i, ind + 1).value == 'Copy':
                     self.copy_list.append(tup)
                 if sheet.cell(i, ind + 1).value == 'Merge':
@@ -118,11 +94,46 @@ class Merge:
 #   method to copy files using copy_list
 #   method to make merges from merge_list
 
+with xlrd.open_workbook('book.xlsx', on_demand = True) as workbook:
+    merge_obj = Merge(workbook)
+    if merge_obj.dst == None:
+        exit()
+    merge_obj.fill_lists()
+    #print(merge_obj.copy_list)
+    #print(merge_obj.merge_list)
+    merge_obj.copy_files()
+    merge_obj.make_merges()
 
-job = 'a'
-while job.isdigit() == False:
-    job = input('Please enter 4 digits of job number here: TL')
-merge_obj = Merge('TL' + job)
-merge_obj.fill_lists()
-merge_obj.copy_files()
-merge_obj.make_merges()
+
+    def __init__(self, ref):
+        self.ref = ref
+        dst_root = '../'
+        for dirs in os.listdir(dst_root):
+            if dirs.startswith(self.ref):
+                path = dst_root + dirs
+                find_worksheet(path)
+                find_dst_path(path)
+        if self.dst == None or self.worksheet == None:
+            exit()
+
+        def find_dst_path(self, path):
+            for dirs in os.listdir(path):
+                if dirs.startswith('HOP'):
+                    self.dst = path + '/' + dirs
+                    print('found dst: ' + self.dst)
+                    return
+            self.dst = None
+            print('Could not find output location. Please check job number\
+                    is correct, and that it\'s folder exists in \'Sales\'')
+
+        def find_worksheet(self, path):
+            for dirs in os.listdir(path):
+                if dirs.startswith('Install'):
+                    for x, y, files in os.walk(dirs):
+                        if files.endswith('.xlsx'):
+                            print('found sheet: ' + files)
+                            self.workbook = files
+                            return
+            self.workbook = None
+            print('Could not find installation spreadsheet.')
+
