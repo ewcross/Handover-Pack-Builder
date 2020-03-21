@@ -6,7 +6,7 @@
 #    By: ecross <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/03/17 16:55:24 by ecross            #+#    #+#              #
-#    Updated: 2020/03/21 11:32:27 by ecross           ###   ########.fr        #
+#    Updated: 2020/03/21 11:54:31 by ecross           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -14,6 +14,7 @@ import xlrd
 import os
 import shutil
 from mailmerge import MailMerge
+#import win32com.client as win32
 
 #/usr/bin/env python
 
@@ -164,9 +165,31 @@ class Pdf_print:
     def __init__(self, path):
         for f in os.listdir(path):
             if f.endswith('.doc') or f.endswith('.docx'):
-                self.word_docs_list.append(f)
+                self.word_docs_list.append(os.path.join(path, f))
             if f.endswith('.vsd') or f.endswith('.vsdx'):
-                self.visio_docs_list.append(f)
+                self.visio_docs_list.append(os.path.join(path, f))
+
+    def word_to_pdf(self):
+        wdFormatPDF = 17
+        for f in self.word_docs_list:
+            #word = win32.gencache.EnsureDispatch('Word.Application')
+            #doc = word.Documents.Open(f)
+            #doc.SaveAs(f[:f.index('.doc')] + '.pdf', FileFormat=wdFormatPDF)
+            #need to find safe was of replacing extension
+            print(f[:f.index('.doc')] + '.pdf')
+            #doc.Close()
+            #word.Quit()
+    
+    def visio_to_pdf(self):
+        wdFormatPDF = 17
+        for f in self.visio_docs_list:
+            #visio = win32.gencache.EnsureDispatch('Visio.Application')
+            #doc = visio.Documents.Open(f)
+            #doc.SaveAs(f[:f.index('.vsd')] + '.pdf', FileFormat=wdFormatPDF)
+            #need to find safe was of replacing extension
+            print(f[:f.index('.vsd')] + '.pdf')
+            #doc.Close()
+            #visio.Quit()
 
 print('\n********Handover Pack Creator********')
 print()
@@ -186,6 +209,5 @@ merge_obj.copy_files()
 merge_obj.make_merges()
 
 pdf_obj = Pdf_print(merge_obj.dst)
-print('word and visio lists:')
-print(pdf_obj.word_docs_list)
-print(pdf_obj.visio_docs_list)
+pdf_obj.word_to_pdf()
+pdf_obj.visio_to_pdf()
