@@ -1,0 +1,20 @@
+to install python:
+
+go here - https://www.python.org/downloads/
+and click on the yellow button below 'Download the latest version for Windows'.
+This should download a file called 'python.exe'. Open this file and follow the instructions
+as per any normal installation, making sure to check the 'add to path' box when applicable.
+Choose normal installation method.
+You should receive a message saying that the installation was successful.
+
+To finalise the setup of this script, run the batch file named 'setup.bat'
+(either by double clicking the file in File Explorer or, if you are working
+from the command prompt, simply by typing the name of the batch file (setup.bat)
+and then pressing enter.
+
+To check installation has worked:
+	- open command line (windows_key + R, then type 'cmd' and then hit enter)
+	  then type 'python --version'. If the installation worked, you should
+	  get 'python 3.8.2' message
+	- then type 'pip --version'. If the installation worked should
+	  get 'pip 20.0.2...' message
