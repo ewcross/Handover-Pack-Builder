@@ -6,7 +6,7 @@
 #    By: ecross <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/03/17 16:55:24 by ecross            #+#    #+#              #
-#    Updated: 2020/03/21 11:54:31 by ecross           ###   ########.fr        #
+#    Updated: 2020/03/22 16:46:52 by ecross           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,23 +15,19 @@ import os
 import shutil
 from mailmerge import MailMerge
 #import win32com.client as win32
+from PyPDF2 import PdfFileReader, PdfFileMerger
 
 #/usr/bin/env python
+
+def check_path(path):
+    if not os.path.exists(path):
+        print('ERROR. File location does not exist: \'' + path + '\'')
+        exit_func()
 
 def exit_func():
     print()
     input('Press any key to exit.')
     exit()
-
-#class with:
-#   workbook as openened by xlrd
-#   string containing the job ref
-#   two lists of tuples, containing:
-#       (src folder, src file name, dest folder, dest file name)
-#   for files to be copied and those to be merged
-#   method to fill lists
-#   method to copy files using copy_list
-#   method to make merges from merge_list
 
 class Merge:
     
@@ -46,49 +42,60 @@ class Merge:
         #needs changing to current dir
         dst_root = '../'
         found = 0
+        check_path(dst_root)
         for dirs in os.listdir(dst_root):
             if dirs.startswith(self.ref):
                 found = 1
-                path = dst_root + dirs
+                path = os.path.join(dst_root, dirs)
+                check_path(path)
                 self.find_workbook(path)
                 self.find_dst_path(path)
         #if job folder not found, error and exit
         if found == 0:
             print('ERROR. Could not find job folder for job: ' + self.ref, end='')
-            print(' in current location (' + os.path.realpath(__file__) + ')')
+            print(' in current location \'' + os.getcwd() + '\'')
             exit_func()
         if self.dst == None or self.workbook == None:
             exit_func()
     
-    #method to look in job folder for HOP subfolder, and
+    #method to look in job folder for Handover subfolder, and
     #if found, set as destination for handover pack
 
     def find_dst_path(self, path):
         for dirs in os.listdir(path):
             if dirs.startswith('Handover'):
                 self.dst = os.path.join(path, dirs)
+                check_path(self.dst)
                 return
         self.dst = None
-        print('ERROR. Could not find output location. Please check \'HOP\' folder', end='')
+        print('ERROR. Could not find output location. Please check \'Handover\' folder', end='')
         print(' exists in job file for ' + self.ref + ' .')
    
     #method to search job folder for install workbook in 'Install' subfolder
     #and, if found, set as the workbook attribute
 
     def find_workbook(self, path):
+        found = 0
         for dirs in os.listdir(path):
             if dirs.startswith('Install'):
-                path = os.path.join(path, dirs)
-                for files in os.listdir(path):
-                    if files.endswith('xlsx'):
-                        print('FOUND ' + path + '/' + files)
-                        with xlrd.open_workbook(os.path.join(path, files), on_demand = True) as workbook:
-                            self.workbook = workbook
-                        return
-        self.workbook = None
-        print('ERROR. Could not find installation spreadsheet. Please check \'Install\' folder', end='')
-        print(' exists in job file for ' + self.ref + ' ,')
-        print(' and that it contains the installations spreadsheet.')
+                found = 1
+                install_dir = dirs
+        if found == 0:
+            print('ERROR. Could not find \'Install\' folder', end='')
+            print(' in job file for ' + self.ref + '.')
+            self.workbook = None
+            return
+        else:
+            path = os.path.join(path, install_dir)
+            for f in os.listdir(path):
+                if f.endswith('xlsx') or f.endswith('xls'):
+                    #need to find better way of selecting spreadsheet
+                    with xlrd.open_workbook(os.path.join(path, f), on_demand = True) as workbook:
+                        self.workbook = workbook
+                    return
+            self.workbook = None
+            print('Could not find installation spreadsheet in \'Install\' ', end='')
+            print('folder for job ' + self.ref + '.')
 
     def get_col(self, sheet, title):
         i = 0
@@ -107,13 +114,13 @@ class Merge:
         outfile_col = self.get_col(sheet, 'Output Doc')
         i = 0
         for x in sheet.col(infile_col):
+            if i == 0:
+                i += 1
+                continue
             if x.value != xlrd.empty_cell.value:
-                #need to check on positions and directions of strokes
                 src_folder = str(sheet.cell(i, infile_col - 1).value)
-                if src_folder[len(src_folder) - 1] != '/':
-                    src_folder += '/'
-                if self.dst[len(self.dst) - 1] != '/':
-                    self.dst += '/'
+                src_folder = os.path.join(src_folder, '')
+                check_path(src_folder)
                 #might need to return to a pair with path of each, if complete destination
                 #file name is provided in spreadsheet
                 tup = (src_folder, str(sheet.cell(i, infile_col).value), self.dst, str(sheet.cell(i, outfile_col).value))
@@ -137,7 +144,6 @@ class Merge:
             i += 1
 
     def make_merges(self):
-        
         for doc in self.merge_list:
             with MailMerge(doc[0] + doc[1]) as document:
                 mydict = {}
@@ -158,38 +164,67 @@ class Merge:
 
 class Pdf_print:
 
-    word_docs_list = []
-    visio_docs_list = []
-    pdf_docs_list = []
+    word_doc_list = []
+    visio_doc_list = []
+    pdf_doc_list = []
 
-    def __init__(self, path):
+    def __init__(self, ref, path):
+        self.ref = ref
+        self.path = path
         for f in os.listdir(path):
             if f.endswith('.doc') or f.endswith('.docx'):
-                self.word_docs_list.append(os.path.join(path, f))
+                self.word_doc_list.append(os.path.join(path, f))
             if f.endswith('.vsd') or f.endswith('.vsdx'):
-                self.visio_docs_list.append(os.path.join(path, f))
+                self.visio_doc_list.append(os.path.join(path, f))
 
     def word_to_pdf(self):
         wdFormatPDF = 17
-        for f in self.word_docs_list:
+        for f in self.word_doc_list:
             #word = win32.gencache.EnsureDispatch('Word.Application')
             #doc = word.Documents.Open(f)
             #doc.SaveAs(f[:f.index('.doc')] + '.pdf', FileFormat=wdFormatPDF)
             #need to find safe was of replacing extension
-            print(f[:f.index('.doc')] + '.pdf')
+            print('converted a .docx to .pdf')
             #doc.Close()
             #word.Quit()
     
     def visio_to_pdf(self):
         wdFormatPDF = 17
-        for f in self.visio_docs_list:
+        for f in self.visio_doc_list:
             #visio = win32.gencache.EnsureDispatch('Visio.Application')
             #doc = visio.Documents.Open(f)
             #doc.SaveAs(f[:f.index('.vsd')] + '.pdf', FileFormat=wdFormatPDF)
             #need to find safe was of replacing extension
-            print(f[:f.index('.vsd')] + '.pdf')
+            print('converted a .vsdx to .pdf')
             #doc.Close()
             #visio.Quit()
+
+    def get_pdf_list(self):
+        for f in os.listdir(self.path):
+            if f.endswith('.pdf'):
+                self.pdf_doc_list.append(os.path.join(self.path, f))
+        self.pdf_doc_list.sort()
+
+    def merge_pdfs(self):
+        merger = PdfFileMerger()
+        for pdf in self.pdf_doc_list:
+            print('processing --> ' + pdf)
+            with open(pdf, 'rb') as f:
+                reader = PdfFileReader(f)
+                if reader.isEncrypted:
+                    print('\n*****Encryption Error*****')
+                    print('The file: ' + pdf + ' is encrypted and ', end='')
+                    print('cannot be processed.\nPlease create an unencrypted copy by printing ', end='')
+                    print('the original as a new pdf, and then save this in its place.')
+                    print('Aborting...')
+                    exit_func()
+                else:
+                    print('wasnt encrytped so merging')
+                    merger.append(pdf)
+        with open(self.path + self.ref + ' ' + 'Handover Pack Full.pdf', 'wb') as f:
+            merger.write(f)
+        merger.close()
+
 
 print('\n********Handover Pack Creator********')
 print()
@@ -208,6 +243,10 @@ print(merge_obj.merge_list)
 merge_obj.copy_files()
 merge_obj.make_merges()
 
-pdf_obj = Pdf_print(merge_obj.dst)
+pdf_obj = Pdf_print(merge_obj.ref, merge_obj.dst)
 pdf_obj.word_to_pdf()
 pdf_obj.visio_to_pdf()
+pdf_obj.get_pdf_list()
+for f in pdf_obj.pdf_doc_list:
+  print(f)
+pdf_obj.merge_pdfs()
