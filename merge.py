@@ -6,7 +6,7 @@
 #    By: ecross <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/03/17 16:55:24 by ecross            #+#    #+#              #
-#    Updated: 2020/04/01 16:46:05 by ecross           ###   ########.fr        #
+#    Updated: 2020/04/01 16:50:03 by ecross           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ import time
 import shutil
 import xlrd
 from mailmerge import MailMerge
-#import win32com.client as win32
+import win32com.client as win32
 from PyPDF2 import PdfFileReader, PdfFileMerger
 
 #*********Basic Process*********
@@ -331,18 +331,16 @@ def get_job_number():
 
 while True:
     job = get_job_number()
-    #merge_obj = Merge('TL' + job)
-    #merge_obj.fill_lists()
-    #print()
-    #merge_obj.copy_files()
-    #print()
-    #merge_obj.make_merges()
-    #pdf_obj = Pdf_print(merge_obj.ref, merge_obj.dst)
-    #print()
-    #pdf_obj.word_to_pdf()
-    #pdf_obj.get_pdf_list()
-    #pdf_obj.merge_pdfs()
-    #print()
+    merge_obj = Merge('TL' + job)
+    merge_obj.fill_lists()
+    print()
+    merge_obj.copy_files()
+    print()
+    merge_obj.make_merges()
+    pdf_obj = Pdf_print(merge_obj.ref, merge_obj.dst)
+    print()
+    pdf_obj.word_to_pdf()
+    pdf_obj.get_pdf_list()
+    pdf_obj.merge_pdfs()
+    print()
     say_msg_dot('Merge complete')
-    #input('Press any key to exit.')
-    #say_bye()
