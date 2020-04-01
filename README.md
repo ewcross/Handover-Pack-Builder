@@ -20,4 +20,4 @@ To use this utility (likely only useful if you work for Treadlighter Ltd.), plea
 
 To use, simply run the script, and follow the instructions.
 
-![Usage](mumma.jpeg)
+![Usage](usage.jpeg)
