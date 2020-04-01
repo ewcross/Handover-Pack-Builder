@@ -6,7 +6,7 @@
 #    By: ecross <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/03/17 16:55:24 by ecross            #+#    #+#              #
-#    Updated: 2020/03/31 10:35:33 by ecross           ###   ########.fr        #
+#    Updated: 2020/04/01 16:46:05 by ecross           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ import time
 import shutil
 import xlrd
 from mailmerge import MailMerge
-import win32com.client as win32
+#import win32com.client as win32
 from PyPDF2 import PdfFileReader, PdfFileMerger
 
 #*********Basic Process*********
@@ -53,6 +53,18 @@ def exit_func(path=0):
     print('Aborting...')
     input('Press any key to exit.')
     exit()
+
+def say_msg_dot(msg):
+    print(msg, end='\r')
+    time.sleep(0.4)
+    print(msg + '.', end='\r')
+    time.sleep(0.4)
+    print(msg + '..', end='\r')
+    time.sleep(0.4)
+    print(msg + '...')
+    time.sleep(0.4)
+    if msg == 'Bye':
+        exit()
 
 class Merge:
     
@@ -298,30 +310,39 @@ try:
             if '6. ' in line:
                 global_eic_worksheet = line[line.index('\'') + 1 :line.index('\'', line.index('\'') + 1)]
                 global_eic_worksheet.strip()
-#except ValueError:
-    #print_error('Problem with \'merge info.txt\'. Continuing with default values.')
 except FileNotFoundError:
     print_error(f'Could not find ini file \'merge info.txt\' in \'{os.getcwd()}\'. Continuing with default values.')
+except:
+    print_error('Problem with \'merge info.txt\'. Continuing with default values.')
 
 print('\n********Handover Pack Creator********')
 print()
-job = input('Please enter 4 digits of job number here: TL')
-while job.isdigit() == False or len(job) != 4:
-    print('\nIncorrect format. Please enter just the four digits of job number after \'TL\'\n')
-    job = input('Please enter 4 digits of job number here: TL')
-print()
 
-merge_obj = Merge('TL' + job)
-merge_obj.fill_lists()
-print()
-merge_obj.copy_files()
-print()
-merge_obj.make_merges()
-pdf_obj = Pdf_print(merge_obj.ref, merge_obj.dst)
-print()
-pdf_obj.word_to_pdf()
-pdf_obj.get_pdf_list()
-pdf_obj.merge_pdfs()
-print()
-print('Merge complete.')
-input('Press any key to exit.')
+def get_job_number():
+    job = ''
+    words = 'P'
+    while job.isdigit() == False or len(job) != 4:
+        print(f'{words}lease enter 4 digits of job number here (or press enter to exit) --> ', end='')
+        job = input('TL:')
+        if not job:
+            say_msg_dot('Bye')
+        words = 'Incorrect format. P'
+    print()
+
+while True:
+    job = get_job_number()
+    #merge_obj = Merge('TL' + job)
+    #merge_obj.fill_lists()
+    #print()
+    #merge_obj.copy_files()
+    #print()
+    #merge_obj.make_merges()
+    #pdf_obj = Pdf_print(merge_obj.ref, merge_obj.dst)
+    #print()
+    #pdf_obj.word_to_pdf()
+    #pdf_obj.get_pdf_list()
+    #pdf_obj.merge_pdfs()
+    #print()
+    say_msg_dot('Merge complete')
+    #input('Press any key to exit.')
+    #say_bye()
