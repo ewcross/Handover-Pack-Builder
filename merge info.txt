@@ -1,0 +1,15 @@
+#This file is used by the script to find file locations, worksheets and other info needed for the merge.
+#If you want to change a file path, folder name or installation worksheet name, please change the
+#value between the single quotes. If you change anything else you will break it, ok?
+
+1. Absolute path to sales folder: '\\admin-pc\tl\OneDrive\Sales'
+
+2. Name of handover pack folder in the job folder withing sales: 'Handover Pack'
+
+3. Name of install folder in the job folder withing sales: 'Install'
+
+4. Name of worksheet containing general merge fields: 'A Merge Data'
+
+5. Name of worksheet containing template files: 'HOP Merge'
+
+6. Name of worksheet containing merge fields for electrical certificate (doc 07): 'A Merge Data'

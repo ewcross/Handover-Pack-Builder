@@ -6,7 +6,7 @@
 #    By: ecross <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/03/17 16:55:24 by ecross            #+#    #+#              #
-#    Updated: 2020/03/26 16:38:04 by ecross           ###   ########.fr        #
+#    Updated: 2020/03/31 10:35:33 by ecross           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -80,7 +80,7 @@ class Merge:
                 self.find_dst_path(path)
         #if job folder not found, error and exit
         if found == 0:
-            print_error('Could not find job folder for job: ' + self.ref + 'in current location \'' + os.getcwd() + '\'')
+            print_error('Could not find job folder for job: ' + self.ref + ' in current location \'' + global_sales_folder_path + '\'')
             exit_func()
         if self.dst == None or self.workbook == None:
             exit_func()
@@ -118,6 +118,7 @@ class Merge:
                 for f in xl_docs:
                     xl_docs_times.append(time.ctime(os.path.getmtime(os.path.join(path, f))))
                 book = xl_docs[xl_docs_times.index(max(xl_docs_times))]
+                print(f'Now processing spreadsheet \'{os.path.join(path, book)}\'.')
                 with xlrd.open_workbook(os.path.join(path, book), on_demand = True) as workbook:
                     sheet = workbook.sheet_by_name(global_merge_worksheet)
                     if sheet.cell(1, 1).value != self.ref:
@@ -158,9 +159,6 @@ class Merge:
                     self.copy_list.append(tup)
                 if sheet.cell(i, outfile_col + 1).value == 'Merge':
                     self.merge_list.append(tup)
-                if sheet.cell(i, outfile_col + 1).value == 'Edit':
-                    #need to do something else with visio files
-                    self.copy_list.append(tup)
             i += 1
 
     def copy_files(self):
@@ -246,32 +244,6 @@ Please check it is not open elsewhere or corrupted.')
         if error == 1:
             exit_func(self.path)
     
-    def visio_to_pdf(self):
-        error = 0
-        wdFormatPDF = 17
-        try:
-            visio = win32.gencache.EnsureDispatch('Visio.Application')
-        except:
-            visio.Quit()
-            print_error('Could not open MS Visio. Please check it is installed and working.')
-            exit_func(self.path)
-        for f in self.visio_doc_list:
-            try:
-                doc = visio.Documents.Open(f)
-                try:
-                    doc.SaveAs(f[:f.index('.')] + '.pdf', FileFormat=wdFormatPDF)
-                    print('Converted \'' + os.path.basename(f) + '\' to pdf.')
-                except:
-                    error = 1
-                    print_error(f'Unable to open visio file \'{os.path.basename(f)}\' for pdf conversion. Please check it is not open elsewhere or corrupted.')
-                doc.Close()
-            except:
-                error = 1
-                print_error(f'Unable to open visio file \'{os.path.basename(f)}\' for pdf conversion. Please check it is not open elsewhere or corrupted.')
-        visio.Quit()
-        if error == 1:
-            exit_func(self.path)
-
     def get_pdf_list(self):
         for f in os.listdir(self.path):
             if f.endswith('.pdf'):
@@ -298,7 +270,7 @@ Please check it is not open elsewhere or corrupted.')
         merger.close()
 
 global_sales_folder_path = os.getcwd()
-global_handover_folder = 'Handover'
+global_handover_folder = 'Handover Pack'
 global_install_folder = 'Install'
 global_merge_worksheet = 'A Merge Data'
 global_template_worksheet = 'HOP Merge'
@@ -307,24 +279,27 @@ global_eic_worksheet = 'EIC Merge'
 try:
     with open('merge info.txt', 'r') as f:
         for line in f:
-            if 'Absolute' in line:
+            if '1. ' in line:
                 global_sales_folder_path = line[line.index('\'') + 1 :line.index('\'', line.index('\'') + 1)]
                 global_sales_folder_path.strip()
-            if 'handover folder' in line:
+            if '2. ' in line:
                 global_handover_folder = line[line.index('\'') + 1 :line.index('\'', line.index('\'') + 1)]
                 global_handover_folder.strip()
-            if 'install folder' in line:
+            if '3. ' in line:
+                global_install_folder = line[line.index('\'') + 1 :line.index('\'', line.index('\'') + 1)]
                 global_install_folder = line[line.index('\'') + 1 :line.index('\'', line.index('\'') + 1)]
                 global_install_folder.strip()
-            if 'general merge' in line:
+            if '4. ' in line:
                 global_merge_worksheet = line[line.index('\'') + 1 :line.index('\'', line.index('\'') + 1)]
                 global_merge_worksheet.strip()
-            if 'template' in line:
+            if '5. ' in line:
                 global_template_worksheet = line[line.index('\'') + 1 :line.index('\'', line.index('\'') + 1)]
                 global_template_worksheet.strip()
-            if 'certificate' in line:
+            if '6. ' in line:
                 global_eic_worksheet = line[line.index('\'') + 1 :line.index('\'', line.index('\'') + 1)]
                 global_eic_worksheet.strip()
+#except ValueError:
+    #print_error('Problem with \'merge info.txt\'. Continuing with default values.')
 except FileNotFoundError:
     print_error(f'Could not find ini file \'merge info.txt\' in \'{os.getcwd()}\'. Continuing with default values.')
 
@@ -345,7 +320,6 @@ merge_obj.make_merges()
 pdf_obj = Pdf_print(merge_obj.ref, merge_obj.dst)
 print()
 pdf_obj.word_to_pdf()
-pdf_obj.visio_to_pdf()
 pdf_obj.get_pdf_list()
 pdf_obj.merge_pdfs()
 print()
