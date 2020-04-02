@@ -18,6 +18,6 @@ To use this utility (likely only useful if you work for Treadlighter Ltd.), plea
   
 ## To Use
 
-To use, simply run the script, and follow the instructions.
+To use, simply run the script (```python3 merge.py```) and follow the instructions.
 
 <img src="usage example.png" width="480" height="140" />
