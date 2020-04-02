@@ -20,4 +20,4 @@ To use this utility (likely only useful if you work for Treadlighter Ltd.), plea
 
 To use, simply run the script, and follow the instructions.
 
-<img src="Screenshot 2020-04-02 at 10.22.23.png" width="240" height="130" />
+<img src="usage example.png" width="480" height="140" />
