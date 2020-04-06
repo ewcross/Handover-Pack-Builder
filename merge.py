@@ -6,7 +6,7 @@
 #    By: ecross <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/03/17 16:55:24 by ecross            #+#    #+#              #
-#    Updated: 2020/04/01 16:50:03 by ecross           ###   ########.fr        #
+#    Updated: 2020/04/06 16:49:07 by ecross           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ import time
 import shutil
 import xlrd
 from mailmerge import MailMerge
-import win32com.client as win32
+#import win32com.client as win32
 from PyPDF2 import PdfFileReader, PdfFileMerger
 
 #*********Basic Process*********
@@ -44,6 +44,16 @@ def check_path(path, msg=1):
             print('Please check ' + msg)
         exit_func()
 
+def check_workbook(workbook):
+    sheets = [global_merge_worksheet, global_template_worksheet]
+    for x in sheets:
+        try:
+            workbook.sheet_by_name(x)
+        except:
+            print_error(f'The XL file being processed does not contain the worksheet {x}. Please check it is the correct file.')
+            return 0
+    return 1
+
 def print_error(msg):
     print()
     print('ERROR. ' + msg)
@@ -52,7 +62,7 @@ def exit_func(path=0):
     print()
     print('Aborting...')
     input('Press any key to exit.')
-    exit()
+    say_msg_dot('Bye')
 
 def say_msg_dot(msg):
     print(msg, end='\r')
@@ -129,9 +139,16 @@ class Merge:
                 xl_docs_times = []
                 for f in xl_docs:
                     xl_docs_times.append(time.ctime(os.path.getmtime(os.path.join(path, f))))
+                #########
+                print('PRINTING XL DOC TIMES: ')
+                for f in xl_docs_times:
+                    print(f)
+                #########
                 book = xl_docs[xl_docs_times.index(max(xl_docs_times))]
                 print(f'Now processing spreadsheet \'{os.path.join(path, book)}\'.')
                 with xlrd.open_workbook(os.path.join(path, book), on_demand = True) as workbook:
+                    if not check_workbook(workbook):
+                        exit_func()
                     sheet = workbook.sheet_by_name(global_merge_worksheet)
                     if sheet.cell(1, 1).value != self.ref:
                         print_error('Project ref in cell B2 of \'A Merge Data\' sheet does not match job ref. Stopping merge.')
@@ -328,6 +345,7 @@ def get_job_number():
             say_msg_dot('Bye')
         words = 'Incorrect format. P'
     print()
+    return job
 
 while True:
     job = get_job_number()
