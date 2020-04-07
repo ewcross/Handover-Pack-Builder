@@ -282,25 +282,26 @@ Please check it is not open elsewhere or corrupted.')
     def merge_pdfs(self):
         merger = PdfFileMerger()
         exit = 0
-        for pdf in self.pdf_doc_list:
-            with open(pdf, 'rb') as f:
-                reader = PdfFileReader(f)
-                if reader.isEncrypted:
-                    print('\n*****Encryption Error*****\n')
-                    print('The file: ' + os.path.basename(pdf) + ' is encrypted and ', end='')
-                    print('cannot be processed.\nPlease create an unencrypted copy by printing ', end='')
-                    print('the original as a new pdf, and then save this in its place.')
-                    merger.close()
-                    exit_func(self.path)
-                else:
-                    merger.append(pdf)
         try:
+            for pdf in self.pdf_doc_list:
+                with open(pdf, 'rb') as f:
+                    reader = PdfFileReader(f)
+                    if reader.isEncrypted:
+                        print('\n*****Encryption Error*****\n')
+                        print('The file: ' + os.path.basename(pdf) + ' is encrypted and ', end='')
+                        print('cannot be processed.\nPlease create an unencrypted copy by printing ', end='')
+                        print('the original as a new pdf, and then save this in its place.')
+                        merger.close()
+                        exit_func(self.path)
+                    else:
+                        merger.append(pdf)
             with open(os.path.join(self.path, self.ref + ' Handover Pack Full.pdf'), 'wb') as f:
                 merger.write(f)
+            merger.close()
         except:
-            print_error("Unable to create full pack merge.")
+            print_error('Unable to create final merge of full handover pack.')
+            merger.close()
             exit_func()
-        merger.close()
 
 global_sales_folder_path = os.getcwd()
 global_handover_folder = 'Handover Pack'
