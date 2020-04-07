@@ -15,7 +15,7 @@ import time
 import shutil
 import xlrd
 from mailmerge import MailMerge
-#import win32com.client as win32
+import win32com.client as win32
 from PyPDF2 import PdfFileReader, PdfFileMerger
 
 #*********Basic Process*********
@@ -294,8 +294,12 @@ Please check it is not open elsewhere or corrupted.')
                     exit_func(self.path)
                 else:
                     merger.append(pdf)
-        with open(os.path.join(self.path, self.ref + ' Handover Pack Full.pdf'), 'wb') as f:
-            merger.write(f)
+        try:
+            with open(os.path.join(self.path, self.ref + ' Handover Pack Full.pdf'), 'wb') as f:
+                merger.write(f)
+        except:
+            print_error("Unable to create full pack merge.")
+            exit_func()
         merger.close()
 
 global_sales_folder_path = os.getcwd()
