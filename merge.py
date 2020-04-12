@@ -6,7 +6,7 @@
 #    By: ecross <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/03/17 16:55:24 by ecross            #+#    #+#              #
-#    Updated: 2020/04/06 16:49:07 by ecross           ###   ########.fr        #
+#    Updated: 2020/04/12 09:54:13 by ecross           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -49,7 +49,7 @@ def check_workbook(workbook):
     for x in sheets:
         try:
             workbook.sheet_by_name(x)
-        except:
+        except Exception:
             print_error(f'The XL file being processed does not contain the worksheet {x}. Please check it is the correct file.')
             return 0
     return 1
@@ -75,6 +75,18 @@ def say_msg_dot(msg):
     time.sleep(0.4)
     if msg == 'Bye':
         exit()
+
+def get_job_number():
+    job = ''
+    words = 'P'
+    while job.isdigit() == False or len(job) != 4:
+        print(f'{words}lease enter 4 digits of job number here (or press enter to exit) --> ', end='')
+        job = input('TL:')
+        if not job:
+            say_msg_dot('Bye')
+        words = 'Incorrect format. P'
+    print()
+    return job
 
 class Merge:
     
@@ -139,11 +151,6 @@ class Merge:
                 xl_docs_times = []
                 for f in xl_docs:
                     xl_docs_times.append(time.ctime(os.path.getmtime(os.path.join(path, f))))
-                #########
-                print('PRINTING XL DOC TIMES: ')
-                for f in xl_docs_times:
-                    print(f)
-                #########
                 book = xl_docs[xl_docs_times.index(max(xl_docs_times))]
                 print(f'Now processing spreadsheet \'{os.path.join(path, book)}\'.')
                 with xlrd.open_workbook(os.path.join(path, book), on_demand = True) as workbook:
@@ -194,7 +201,7 @@ class Merge:
         for tup in self.copy_list:
             try:
                 shutil.copy(os.path.join(tup[0], tup[1]), os.path.join(tup[2], tup[3]))
-            except:
+            except Exception:
                 print_error(f'Could not copy file \'{tup[1]}\' to location \'{tup[2]}\'.')
                 exit_func(self.dst)
             print('Fetched file: \'' + tup[1] + '\'.')
@@ -218,7 +225,7 @@ class Merge:
                 document.merge(**mydict)
                 try:
                     document.write(os.path.join(doc[2], doc[3].replace('xxxx', self.ref[2:])))
-                except:
+                except Exception:
                     print_error('Could not save merged doc \'' + doc[3].replace('xxxx', self.ref[2:]) + '\'. \
 Please make sure a file of this name does not already exist.')
                     error = 1
@@ -251,7 +258,7 @@ class Pdf_print:
         wdFormatPDF = 17
         try:
             word = win32.gencache.EnsureDispatch('Word.Application')
-        except:
+        except Exception:
             word.Quit()
             print_error('Could not open MS Word. Please check it is installed and working.')
             exit_func(self.path)
@@ -261,12 +268,12 @@ class Pdf_print:
                 try:
                     doc.SaveAs(f[:f.index('.')] + '.pdf', FileFormat=wdFormatPDF)
                     print('Converted \'' + os.path.basename(f) + '\' to pdf.')
-                except:
+                except Exception:
                     error = 1
                     print_error(f'Unable to open word file \'{os.path.basename(f)}\' for pdf conversion. \
 Please check it is not open elsewhere or corrupted.')
                 doc.Close()
-            except:
+            except Exception:
                 error = 1
                 print_error(f'Unable to open word file \'{os.path.basename(f)}\' for pdf conversion. Please check it is not open elsewhere or corrupted.')
         word.Quit()
@@ -298,7 +305,7 @@ Please check it is not open elsewhere or corrupted.')
             with open(os.path.join(self.path, self.ref + ' Handover Pack Full.pdf'), 'wb') as f:
                 merger.write(f)
             merger.close()
-        except:
+        except Exception:
             print_error('Unable to create final merge of full handover pack.')
             merger.close()
             exit_func()
@@ -334,36 +341,28 @@ try:
                 global_eic_worksheet.strip()
 except FileNotFoundError:
     print_error(f'Could not find ini file \'merge info.txt\' in \'{os.getcwd()}\'. Continuing with default values.')
-except:
+except Exception:
     print_error('Problem with \'merge info.txt\'. Continuing with default values.')
 
 print('\n********Handover Pack Creator********')
 print()
 
-def get_job_number():
-    job = ''
-    words = 'P'
-    while job.isdigit() == False or len(job) != 4:
-        print(f'{words}lease enter 4 digits of job number here (or press enter to exit) --> ', end='')
-        job = input('TL:')
-        if not job:
-            say_msg_dot('Bye')
-        words = 'Incorrect format. P'
-    print()
-    return job
-
-while True:
-    job = get_job_number()
-    merge_obj = Merge('TL' + job)
-    merge_obj.fill_lists()
-    print()
-    merge_obj.copy_files()
-    print()
-    merge_obj.make_merges()
-    pdf_obj = Pdf_print(merge_obj.ref, merge_obj.dst)
-    print()
-    pdf_obj.word_to_pdf()
-    pdf_obj.get_pdf_list()
-    pdf_obj.merge_pdfs()
-    print()
-    say_msg_dot('Merge complete')
+try:
+    while True:
+        job = get_job_number()
+        merge_obj = Merge('TL' + job)
+        merge_obj.fill_lists()
+        print()
+        merge_obj.copy_files()
+        print()
+        merge_obj.make_merges()
+        pdf_obj = Pdf_print(merge_obj.ref, merge_obj.dst)
+        print()
+        pdf_obj.word_to_pdf()
+        pdf_obj.get_pdf_list()
+        pdf_obj.merge_pdfs()
+        print()
+        say_msg_dot('Merge complete')
+except Exception:
+    print_error('An unknown error occured. To get a better idea of what went wrong: right click this script (\'merge.py\') -> edit with IDLE -> press F5 -> follow the instructions as usual and check the error message generated.')
+    exit_func()
